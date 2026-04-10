@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSync — AI-Powered Skills Gap Analysis for Tech & Data Job Seekers</title>
+  <meta name="description" content="SkillSync is an AI-powered browser extension that compares your resume to job postings and returns a personalized skills-gap report with concrete next steps in under 30 seconds." />
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg2:#0b1730;
+      --card:#0f1d38cc;
+      --card2:#111f3dcc;
+      --text:#eaf1ff;
+      --muted:#a8b7d6;
+      --line:rgba(255,255,255,.10);
+      --brand:#7c8cff;
+      --brand2:#6ae4ff;
+      --accent:#8fffcb;
+      --warn:#ffd37a;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius: 22px;
+      --max: 1180px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(124,140,255,.20), transparent 50%),
+        radial-gradient(900px 500px at 85% 10%, rgba(106,228,255,.14), transparent 45%),
+        linear-gradient(180deg, var(--bg), #08101d 40%, #060b14 100%);
+      line-height:1.6;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{width:min(var(--max), calc(100% - 40px)); margin:0 auto}
+    .topbar{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter: blur(14px);
+      background: rgba(7,17,31,.7);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .topbar-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 0;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.2px;
+    }
+    .logo{
+      width:40px; height:40px; border-radius:14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      box-shadow: 0 10px 30px rgba(124,140,255,.35);
+      position:relative; overflow:hidden;
+    }
+    .logo::after{
+      content:""; position:absolute; inset:9px;
+      border:2px solid rgba(255,255,255,.85);
+      border-left-color:transparent; border-radius:10px;
+      transform: rotate(12deg);
+    }
+    .nav{display:flex; gap:18px; flex-wrap:wrap; justify-content:flex-end}
+    .nav a{
+      color:var(--muted); font-size:14px; padding:8px 10px; border-radius:999px;
+    }
+    .nav a:hover{background:rgba(255,255,255,.05); color:var(--text)}
+    .hero{
+      padding:88px 0 54px;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:34px;
+      align-items:center;
+    }
+    .eyebrow{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 14px; border:1px solid rgba(255,255,255,.12);
+      border-radius:999px; color:var(--muted); font-size:14px;
+      background: rgba(255,255,255,.03);
+      margin-bottom:18px;
+    }
+    .eyebrow span{
+      width:9px; height:9px; border-radius:999px; background:var(--accent);
+      box-shadow: 0 0 0 5px rgba(143,255,203,.12);
+    }
+    h1{
+      margin:0 0 18px;
+      font-size: clamp(40px, 6vw, 68px);
+      line-height:1.02;
+      letter-spacing:-.04em;
+    }
+    .lead{
+      font-size:clamp(17px, 2vw, 20px);
+      color:var(--muted);
+      max-width: 58ch;
+      margin:0 0 28px;
+    }
+    .cta-row{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:14px 20px; border-radius:14px; font-weight:700;
+      border:1px solid transparent; transition:.2s ease;
+    }
+    .btn-primary{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color:#04101e;
+      box-shadow: 0 14px 36px rgba(106,228,255,.16);
+    }
+    .btn-primary:hover{transform:translateY(-1px); filter:saturate(1.1)}
+    .btn-secondary{
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.10);
+      color:var(--text);
+    }
+    .btn-secondary:hover{background: rgba(255,255,255,.07)}
+    .hero-meta{
+      display:flex; gap:18px; flex-wrap:wrap;
+      margin-top:22px; color:var(--muted); font-size:14px;
+    }
+    .meta-pill{
+      padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.03);
+    }
+    .mock{
+      background: linear-gradient(180deg, rgba(17,31,61,.92), rgba(10,19,38,.92));
+      border:1px solid rgba(255,255,255,.1);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .mock-top{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px;
+      background: rgba(255,255,255,.03);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+      font-size:13px;
+    }
+    .dots{display:flex; gap:7px}
+    .dots i{width:10px; height:10px; border-radius:50%}
+    .dots i:nth-child(1){background:#ff6b6b}
+    .dots i:nth-child(2){background:#ffd166}
+    .dots i:nth-child(3){background:#51cf66}
+    .mock-body{padding:20px}
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.09);
+      border-radius:20px;
+      padding:18px;
+      margin-bottom:14px;
+    }
+    .panel h3{margin:0 0 8px; font-size:16px}
+    .small{font-size:13px; color:var(--muted)}
+    .bars{display:grid; gap:10px; margin-top:14px}
+    .bar-row{display:grid; grid-template-columns: 110px 1fr 46px; gap:10px; align-items:center; font-size:13px; color:var(--muted)}
+    .bar{
+      height:10px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden;
+    }
+    .bar > span{
+      display:block; height:100%; border-radius:inherit;
+      background: linear-gradient(90deg, var(--brand2), var(--brand));
+    }
+    .report{
+      display:grid; gap:10px; margin-top:12px;
+    }
+    .report-item{
+      display:flex; justify-content:space-between; gap:12px; align-items:center;
+      padding:12px 14px; border-radius:16px; background:rgba(7,17,31,.55);
+      border:1px solid rgba(255,255,255,.08); font-size:13px;
+    }
+    .tag{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      background: rgba(143,255,203,.12); color: #c9ffe7;
+      border:1px solid rgba(143,255,203,.16);
+      white-space:nowrap;
+    }
+    section{padding:58px 0}
+    .section-head{
+      margin-bottom:24px;
+      display:flex; justify-content:space-between; align-items:end; gap:16px; flex-wrap:wrap;
+    }
+    h2{
+      margin:0;
+      font-size: clamp(28px, 3.5vw, 42px);
+      line-height:1.08;
+      letter-spacing:-.03em;
+    }
+    .section-sub{color:var(--muted); max-width:65ch; margin:0}
+    .grid-3{
+      display:grid; grid-template-columns: repeat(3, 1fr); gap:18px;
+    }
+    .grid-2{
+      display:grid; grid-template-columns: repeat(2, 1fr); gap:18px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(17,31,61,.72), rgba(10,19,38,.72));
+      border:1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius);
+      padding:22px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.15);
+    }
+    .card h3{margin:0 0 10px; font-size:20px}
+    .card p{margin:0; color:var(--muted)}
+    .step{
+      display:flex; gap:16px; align-items:flex-start;
+    }
+    .num{
+      flex:0 0 auto;
+      width:42px; height:42px; border-radius:14px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(124,140,255,.2), rgba(106,228,255,.18));
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      font-weight:800;
+    }
+    ul.clean{
+      list-style:none; padding:0; margin:0; display:grid; gap:14px;
+    }
+    .check{
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .check i{
+      width:22px; height:22px; border-radius:50%; display:grid; place-items:center;
+      background: rgba(143,255,203,.14); color:var(--accent); font-style:normal; font-weight:900;
+      margin-top:2px;
+      flex:0 0 auto;
+    }
+    .persona{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .persona .label{
+      display:inline-flex; width:max-content;
+      font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#d8e1ff;
+      padding:6px 10px; border-radius:999px; background:rgba(124,140,255,.12); border:1px solid rgba(124,140,255,.16);
+    }
+    .metric-strip{
+      display:grid; grid-template-columns: repeat(2, 1fr); gap:18px;
+    }
+    .metric{
+      text-align:center;
+      padding:26px 18px;
+    }
+    .metric strong{
+      display:block; font-size:42px; line-height:1; margin-bottom:10px;
+      background: linear-gradient(135deg, var(--brand2), var(--brand));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .footer-cta{
+      text-align:center;
+      background:
+        radial-gradient(900px 300px at 50% 0%, rgba(124,140,255,.18), transparent 60%),
+        linear-gradient(180deg, rgba(17,31,61,.78), rgba(10,19,38,.9));
+      border:1px solid rgba(255,255,255,.1);
+      border-radius: 30px;
+      padding: 36px 22px;
+      box-shadow: var(--shadow);
+    }
+    .footer-cta h2{margin-bottom:12px}
+    .footer-cta p{margin:0 auto 24px; max-width:62ch; color:var(--muted)}
+    .fineprint{
+      color:rgba(168,183,214,.8);
+      font-size:13px;
+      margin-top:16px;
+    }
+    @media (max-width: 940px){
+      .hero-grid, .grid-3, .grid-2, .metric-strip{grid-template-columns:1fr}
+      .nav{display:none}
+      .hero{padding-top:52px}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>SkillSync</div>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <a href="#how-it-works">How it works</a>
+        <a href="#features">Core features</a>
+        <a href="#users">Target users</a>
+        <a href="#why-it-matters">Why it matters</a>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span></span> AI-powered browser extension for tech and data job seekers</div>
+          <h1>See your skill gaps for any job posting in under 30 seconds.</h1>
+          <p class="lead">
+            SkillSync parses your resume, reads the active job post, compares the two, and gives you a personalized skills-gap report with concrete next steps—so you know exactly what to learn, improve, or highlight before you apply.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#final-cta">Try SkillSync</a>
+            <a class="btn btn-secondary" href="#features">Explore features</a>
+          </div>
+          <div class="hero-meta">
+            <div class="meta-pill">Resume upload or paste text</div>
+            <div class="meta-pill">Job-post skill extraction</div>
+            <div class="meta-pill">Priority-ranked recommendations</div>
+          </div>
+        </div>
+
+        <div class="mock" aria-label="SkillSync preview">
+          <div class="mock-top">
+            <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div>SkillSync Report Preview</div>
+            <div>0:28</div>
+          </div>
+          <div class="mock-body">
+            <div class="panel">
+              <h3>Matched fit: 78%</h3>
+              <div class="small">Senior ML Engineer · Applied AI role</div>
+              <div class="bars">
+                <div class="bar-row"><div>Python</div><div class="bar"><span style="width:92%"></span></div><div>High</div></div>
+                <div class="bar-row"><div>LLMs</div><div class="bar"><span style="width:64%"></span></div><div>Med</div></div>
+                <div class="bar-row"><div>MLOps</div><div class="bar"><span style="width:38%"></span></div><div>Gap</div></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Top actions</h3>
+              <div class="report">
+                <div class="report-item"><span>Take one MLOps course</span><span class="tag">Recommended</span></div>
+                <div class="report-item"><span>Add one deployment bullet</span><span class="tag">Resume fix</span></div>
+                <div class="report-item"><span>Build a model serving project</span><span class="tag">Project idea</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>How it works</h2>
+            <p class="section-sub">A fast workflow built for people comparing roles while browsing job boards.</p>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="card step">
+            <div class="num">1</div>
+            <div>
+              <h3>Upload your resume once</h3>
+              <p>Drop in a PDF or DOCX, or paste your resume text. SkillSync extracts skills, roles, tools, and experience signals into a reusable profile.</p>
+            </div>
+          </div>
+          <div class="card step">
+            <div class="num">2</div>
+            <div>
+              <h3>Analyze the active job posting</h3>
+              <p>The browser extension reads the posting you're viewing and identifies required skills, preferred skills, responsibilities, and seniority cues.</p>
+            </div>
+          </div>
+          <div class="card step">
+            <div class="num">3</div>
+            <div>
+              <h3>Get your gap report instantly</h3>
+              <p>SkillSync compares both sides and returns matched skills, missing skills, and prioritized recommendations with concrete next actions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Core features</h2>
+            <p class="section-sub">Everything in the MVP is focused on tech and data roles, with speed and clarity as the priority.</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Resume Upload and Parsing</h3>
+            <p>Upload a resume PDF/DOCX or paste text to extract structured skills, roles, tools, and experience signals for reuse across applications.</p>
+          </div>
+          <div class="card">
+            <h3>Job Posting Skill Extraction</h3>
+            <p>The extension reads the active job posting and extracts required and preferred skills, responsibilities, and seniority cues.</p>
+          </div>
+          <div class="card">
+            <h3>Skills Gap Analysis</h3>
+            <p>Compare your resume against the posting to identify matched skills, missing skills, and partially evidenced skills.</p>
+          </div>
+          <div class="card">
+            <h3>Personalized Gap Report</h3>
+            <p>See a concise report with missing skills, importance signals from the posting, and a ranked priority list.</p>
+          </div>
+          <div class="card">
+            <h3>Concrete Next-Step Recommendations</h3>
+            <p>Get one relevant course, one project idea, and one resume bullet improvement for each major gap so you can act immediately.</p>
+          </div>
+          <div class="card">
+            <h3>Saved Profile for Reuse</h3>
+            <p>Store your parsed profile and compare against multiple postings without re-uploading every time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="users">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Built for job seekers who need precision</h2>
+            <p class="section-sub">Whether you're starting out, pivoting careers, or targeting senior roles, SkillSync helps you focus on the gaps that matter most.</p>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="card persona">
+            <div class="label">Fresh graduate</div>
+            <h3>Fresh Graduate Data Applicant</h3>
+            <p>For recent grads applying to entry-level data analyst, data scientist, or software roles and using job boards heavily.</p>
+            <p><strong>Pain points:</strong> Does not know which requirements are truly important versus nice-to-have; struggles to translate resume content into a clear match.</p>
+          </div>
+          <div class="card persona">
+            <div class="label">Career pivoter</div>
+            <h3>Career Pivoter to Data Science</h3>
+            <p>For professionals transitioning from another field into data science or analytics and needing to identify gaps quickly.</p>
+            <p><strong>Pain points:</strong> Lacks confidence about which missing skills block applications; needs targeted learning recommendations instead of broad advice.</p>
+          </div>
+          <div class="card persona">
+            <div class="label">Mid-level engineer</div>
+            <h3>Mid-level ML Engineer</h3>
+            <p>For experienced engineers targeting senior machine learning or applied AI roles and checking fit across multiple postings.</p>
+            <p><strong>Pain points:</strong> Wants fast comparison across senior-level expectations; needs to prioritize only the highest-impact gaps before applying.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="why-it-matters">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Why SkillSync matters</h2>
+            <p class="section-sub">Most job seekers lose time on vague advice. SkillSync turns a posting into a practical action plan.</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>The problem</h3>
+            <p>Tech and data job seekers often cannot quickly tell which required skills they are missing, which ones matter most, and what to do next. That uncertainty slows applications and makes resume tailoring feel guesswork-heavy.</p>
+          </div>
+          <div class="card">
+            <h3>The solution</h3>
+            <p>SkillSync provides a browser-extension MVP that analyzes the current job posting, compares it to your resume, and returns a personalized skills-gap report with concrete recommendations within 30 seconds.</p>
+          </div>
+        </div>
+
+        <div class="metric-strip" style="margin-top:18px;">
+          <div class="card metric">
+            <strong>30s</strong>
+            <p>Target time to generate a usable report</p>
+          </div>
+          <div class="card metric">
+            <strong>60%</strong>
+            <p>Goal for users clicking or saving a recommended next step</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <h3>MVP scope, kept tight</h3>
+          <ul class="clean">
+            <li class="check"><i>✓</i><span>Browser extension that analyzes the currently viewed job posting and generates a skills-gap report within 30 seconds.</span></li>
+            <li class="check"><i>✓</i><span>Resume input via upload or paste, job skill extraction, gap matching, and personalized recommendations for tech and data roles only.</span></li>
+            <li class="check"><i>✓</i><span>No job marketplace, no application tracking, no automated applying, and no general career coaching.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="final-cta">
+      <div class="container">
+        <div class="footer-cta">
+          <h2>Know the gap. Close the gap. Apply with confidence.</h2>
+          <p>SkillSync gives you a clear, personalized plan for every posting you view—so you can stop guessing and start making smarter application decisions.</p>
+          <div class="cta-row" style="justify-content:center">
+            <a class="btn btn-primary" href="#">Get SkillSync</a>
+            <a class="btn btn-secondary" href="#how-it-works">See how it works</a>
+          </div>
+          <div class="fineprint">Designed for fresh graduates, career pivoters, and mid-level ML engineers applying to tech and data roles.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
