@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSync — See your skills gap instantly</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(17, 24, 39, 0.78);
+      --panel-2: rgba(31, 41, 55, 0.9);
+      --text: #e5eefc;
+      --muted: #9fb0d0;
+      --line: rgba(148, 163, 184, 0.2);
+      --accent: #6ee7ff;
+      --accent-2: #8b5cf6;
+      --good: #34d399;
+      --warn: #fbbf24;
+      --bad: #fb7185;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(110, 231, 255, 0.16), transparent 24%),
+        radial-gradient(circle at 80% 10%, rgba(139, 92, 246, 0.16), transparent 28%),
+        linear-gradient(180deg, #07101f 0%, #0b1020 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 1.05rem;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.35);
+      display: grid;
+      place-items: center;
+      color: #081120;
+      font-weight: 900;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 0.92rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .hero-copy, .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-copy {
+      padding: 40px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.5rem, 5vw, 4.8rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+      max-width: 12ch;
+    }
+
+    .subhead {
+      font-size: 1.12rem;
+      color: var(--muted);
+      max-width: 60ch;
+      margin: 0 0 24px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary {
+      color: #05121f;
+      background: linear-gradient(135deg, var(--accent), #a5f3fc);
+      box-shadow: 0 16px 40px rgba(110, 231, 255, 0.24);
+    }
+    .btn.secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+    }
+
+    .microcopy {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .hero-aside {
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.82));
+    }
+
+    .mock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mock-title {
+      font-weight: 800;
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .extension-chip {
+      font-size: 0.8rem;
+      color: #c7d2fe;
+      background: rgba(139, 92, 246, 0.18);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .mock-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      margin-bottom: 12px;
+    }
+
+    .mock-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .mock-label { color: var(--muted); font-size: 0.9rem; }
+    .mock-value { font-weight: 700; }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+      margin: 8px 0 0;
+    }
+    .bar > span { display: block; height: 100%; border-radius: inherit; }
+    .good { background: linear-gradient(90deg, var(--good), #86efac); }
+    .warn { background: linear-gradient(90deg, var(--warn), #fde68a); }
+    .bad { background: linear-gradient(90deg, var(--bad), #fda4af); }
+
+    .section {
+      margin-top: 24px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 1.6rem;
+      letter-spacing: -0.03em;
+    }
+    .section p.lead {
+      color: var(--muted);
+      margin: 0 0 22px;
+      max-width: 70ch;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature, .report, .privacy {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+    }
+
+    .feature h3, .report h3, .privacy h3 {
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+    }
+
+    .feature p, .report p, .privacy p, li { color: var(--muted); }
+
+    .report-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .tag {
+      font-size: 0.82rem;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .tag.good { color: #a7f3d0; }
+    .tag.warn { color: #fde68a; }
+    .tag.bad { color: #fecdd3; }
+
+    .next-step {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+    }
+
+    .badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: rgba(110, 231, 255, 0.14);
+      color: var(--accent);
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .small { font-size: 0.9rem; }
+
+    ul.clean {
+      padding-left: 18px;
+      margin: 12px 0 0;
+    }
+
+    .footer-cta {
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 20px 22px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(110,231,255,0.12), rgba(139,92,246,0.12));
+      border: 1px solid rgba(148,163,184,0.18);
+    }
+
+    .footer-cta strong { display: block; margin-bottom: 4px; }
+
+    @media (max-width: 920px) {
+      .hero, .report-layout, .grid { grid-template-columns: 1fr; }
+      .hero-copy { padding: 28px; }
+      h1 { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">S</div>
+        <div>
+          SkillSync
+          <div class="microcopy small">Browser-extension-assisted skills gap prototype</div>
+        </div>
+      </div>
+      <div class="pill">Session-only processing • No data sold or shared</div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>See exactly which skills your resume is missing.</h1>
+        <p class="subhead">SkillSync compares your resume with a job posting, highlights matched, missing, and partially matched skills, and suggests concrete next steps so you know what to improve first.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#demo">Install / Get Started</a>
+          <a class="btn secondary" href="#features">Explore Features</a>
+        </div>
+        <div class="microcopy">Built for active job seekers, career switchers, and bootcamp graduates who want a clearer path to stronger applications.</div>
+      </div>
+
+      <aside class="panel hero-aside" id="demo">
+        <div class="mock-header">
+          <p class="mock-title">Extension Demo Trigger</p>
+          <span class="extension-chip">Mock browser extension</span>
+        </div>
+        <div class="mock-card">
+          <div class="mock-row">
+            <div>
+              <div class="mock-label">Detected on page</div>
+              <div class="mock-value">Senior Product Analyst job post</div>
+            </div>
+            <div class="tag good">Captured</div>
+          </div>
+          <div class="bar"><span class="good" style="width: 82%"></span></div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-row">
+            <div>
+              <div class="mock-label">Resume match</div>
+              <div class="mock-value">68% aligned</div>
+            </div>
+            <div class="tag warn">Gap found</div>
+          </div>
+          <div class="bar"><span class="warn" style="width: 68%"></span></div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-row">
+            <div>
+              <div class="mock-label">Recommended action</div>
+              <div class="mock-value">Add SQL project + emphasize analytics tools</div>
+            </div>
+            <div class="tag bad">2 skills missing</div>
+          </div>
+        </div>
+        <div class="microcopy">In the real product, the extension would detect a job post, send the text to the landing-page prototype, and show a skills-gap report. This page demonstrates the experience only.</div>
+      </aside>
+    </section>
+
+    <section class="section" id="features">
+      <h2>Features designed for fast application feedback</h2>
+      <p class="lead">The prototype focuses on the core flow: upload a resume, compare it to a job post, and get a simple report with clear next steps. Privacy and session handling are built into the copy so users understand what is happening.</p>
+      <div class="grid">
+        <div class="feature">
+          <h3>Resume Upload</h3>
+          <p>Upload a PDF or DOCX resume and extract basic text and key skills for comparison.</p>
+        </div>
+        <div class="feature">
+          <h3>Sample Job Post Analyzer</h3>
+          <p>Paste a job posting or use a sample post to extract requirements and responsibilities.</p>
+        </div>
+        <div class="feature">
+          <h3>Skills Gap Report</h3>
+          <p>View matched, missing, and partially matched skills in a clear, easy-to-scan report.</p>
+        </div>
+        <div class="feature">
+          <h3>Suggested Next Steps</h3>
+          <p>For each missing skill, get lightweight recommendations like learning resources, project ideas, and resume tailoring tips.</p>
+        </div>
+        <div class="feature">
+          <h3>Browser Extension Demo Trigger</h3>
+          <p>A minimal mock interaction shows how a browser extension could detect a job post and send it to the prototype.</p>
+        </div>
+        <div class="feature">
+          <h3>Privacy and Session-Only Processing</h3>
+          <p>Clear trust messaging explains what the extension reads, how resume data is handled, and that nothing is sold or shared.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Sample skills-gap report</h2>
+      <p class="lead">A realistic view of how SkillSync helps users understand what to do next instead of just showing a generic match score.</p>
+      <div class="report-layout">
+        <div class="report">
+          <h3>Resume vs. Job Posting</h3>
+          <p>Target role: Product Analyst</p>
+          <div class="tag-row">
+            <span class="tag good">Matched: Excel</span>
+            <span class="tag good">Matched: Data Visualization</span>
+            <span class="tag warn">Partial: SQL</span>
+            <span class="tag bad">Missing: A/B Testing</span>
+            <span class="tag bad">Missing: Stakeholder Communication</span>
+          </div>
+          <ul class="clean">
+            <li><strong>Matched skills:</strong> Excel, Tableau, reporting, dashboard creation</li>
+            <li><strong>Partially matched:</strong> SQL fundamentals, experimentation</li>
+            <li><strong>Missing skills:</strong> A/B testing, product analytics, stakeholder storytelling</li>
+          </ul>
+        </div>
+        <div class="report">
+          <h3>Suggested next steps</h3>
+          <div class="next-step">
+            <div class="step">
+              <div class="badge">1</div>
+              <div>
+                <strong>Learn SQL for product analytics</strong>
+                <div class="small">Try a short SQL refresher and add one portfolio query project.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="badge">2</div>
+              <div>
+                <strong>Build an A/B test case study</strong>
+                <div class="small">Create a mini project that explains hypothesis, metric selection, and results.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="badge">3</div>
+              <div>
+                <strong>Tune your resume language</strong>
+                <div class="small">Mirror keywords from the posting and highlight impact in measurable terms.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Trust and permission copy</h2>
+      <div class="grid">
+        <div class="privacy">
+          <h3>What the extension reads</h3>
+          <p>The mock extension is framed as reading only the current job posting content you choose to analyze. It does not claim access to unrelated browsing history.</p>
+        </div>
+        <div class="privacy">
+          <h3>How resume data is handled</h3>
+          <p>Uploaded resumes and job text are processed for the current session and can be deleted by the user at any time.</p>
+        </div>
+        <div class="privacy">
+          <h3>No selling or sharing</h3>
+          <p>The landing page clearly states that resume data is not sold or shared, reinforcing trust during prototype testing.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="footer-cta">
+      <div>
+        <strong>Ready to close the skill gap?</strong>
+        <span class="microcopy">Install the demo experience, upload a resume, and see your next best move in seconds.</span>
+      </div>
+      <a class="btn primary" href="#demo">Install / Get Started</a>
+    </section>
+  </div>
+</body>
+</html>
