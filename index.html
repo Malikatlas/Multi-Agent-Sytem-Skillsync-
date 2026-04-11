@@ -3,48 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkillSync — Close the Skills Gap Faster</title>
+  <title>SkillSync — Instantly See How Your Resume Matches Any Job</title>
+  <meta name="description" content="SkillSync is a Chrome browser extension that compares your resume to supported job postings and shows matched skills, missing skills, and practical next steps." />
   <style>
     :root {
       --bg: #0b1020;
-      --panel: rgba(255, 255, 255, 0.08);
-      --panel-strong: rgba(255, 255, 255, 0.12);
-      --text: #e8ecff;
-      --muted: #b8c0e0;
-      --accent: #7c5cff;
-      --accent-2: #24d3b5;
-      --border: rgba(255, 255, 255, 0.12);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --bg2: #101936;
+      --card: rgba(255,255,255,0.07);
+      --card-strong: rgba(255,255,255,0.12);
+      --text: #eef2ff;
+      --muted: #b9c2e2;
+      --accent: #7c9cff;
+      --accent2: #5de4c7;
+      --warning: #ffcc66;
+      --danger: #ff7b8a;
+      --line: rgba(255,255,255,0.12);
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --max: 1180px;
     }
 
     * { box-sizing: border-box; }
 
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(124, 92, 255, 0.22), transparent 30%),
-        radial-gradient(circle at top right, rgba(36, 211, 181, 0.16), transparent 24%),
-        linear-gradient(180deg, #070a14 0%, #0b1020 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
-      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(124,156,255,0.25), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,228,199,0.16), transparent 22%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      min-height: 100vh;
+      line-height: 1.5;
     }
 
-    body { line-height: 1.6; }
-
     .wrap {
-      width: min(1120px, calc(100% - 32px));
+      width: min(100% - 32px, var(--max));
       margin: 0 auto;
-      padding: 28px 0 56px;
     }
 
     header {
+      padding: 24px 0 0;
+    }
+
+    .nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 10px 0 34px;
+      padding: 8px 0 24px;
     }
 
     .brand {
@@ -53,394 +61,529 @@
       gap: 12px;
       font-weight: 800;
       letter-spacing: 0.2px;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
     }
 
     .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #08101d;
       box-shadow: var(--shadow);
       font-weight: 900;
     }
 
-    .tag {
-      color: var(--muted);
-      font-size: 0.95rem;
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
+      border: 1px solid var(--line);
       background: rgba(255,255,255,0.04);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.92rem;
       backdrop-filter: blur(10px);
     }
 
     .hero {
+      padding: 36px 0 36px;
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 24px;
-      align-items: stretch;
-      margin-top: 10px;
-    }
-
-    .hero-card, .info-card, .feature-card, .step-card {
-      border: 1px solid var(--border);
-      background: var(--panel);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow);
-      border-radius: 24px;
-    }
-
-    .hero-card {
-      padding: 38px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      inset: auto -20% -30% auto;
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(124, 92, 255, 0.28), transparent 68%);
-      pointer-events: none;
-    }
-
-    .kicker {
-      display: inline-flex;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
       align-items: center;
-      gap: 8px;
-      color: #dfe5ff;
-      font-size: 0.92rem;
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.05);
     }
 
     h1 {
-      margin: 18px 0 14px;
-      font-size: clamp(2.4rem, 6vw, 4.6rem);
+      margin: 16px 0 16px;
+      font-size: clamp(2.5rem, 5vw, 5rem);
       line-height: 1.02;
       letter-spacing: -0.04em;
-      max-width: 12ch;
     }
 
     .subheadline {
-      font-size: 1.08rem;
+      font-size: clamp(1.05rem, 1.6vw, 1.28rem);
       color: var(--muted);
-      max-width: 60ch;
-      margin: 0 0 28px;
+      max-width: 62ch;
+      margin-bottom: 24px;
     }
 
     .cta-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
-      align-items: center;
+      gap: 12px;
+      margin: 24px 0 20px;
     }
 
-    .cta {
+    .btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 14px 20px;
-      border-radius: 14px;
-      border: none;
-      background: linear-gradient(135deg, var(--accent), #9a7bff);
-      color: white;
-      font-weight: 700;
-      text-decoration: none;
-      box-shadow: 0 16px 34px rgba(124, 92, 255, 0.35);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .cta:hover { transform: translateY(-1px); box-shadow: 0 20px 42px rgba(124, 92, 255, 0.45); }
+    .btn-primary {
+      color: #08101d;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 16px 40px rgba(93,228,199,0.2);
+    }
 
-    .secondary {
+    .btn-secondary {
       color: var(--text);
-      text-decoration: none;
-      padding: 14px 18px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 28px;
-    }
+    .btn:hover { transform: translateY(-1px); }
 
-    .stat {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 1.25rem;
-      margin-bottom: 4px;
-      color: #fff;
-    }
-
-    .info-card {
-      padding: 28px;
+    .meta-row {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .hero-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .mock-top {
+      display: flex;
+      align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,0.12);
     }
 
-    .mini-title {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: #9db0ff;
-      margin: 0 0 10px;
+    .dots { display: flex; gap: 8px; }
+    .dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
     }
 
-    .persona-list, .feature-grid, .steps {
+    .mock-title { font-weight: 700; color: var(--text); }
+
+    .mock-body {
+      padding: 18px;
       display: grid;
       gap: 16px;
     }
 
-    .persona {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
+    .browser-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 0.92rem;
+      border: 1px solid var(--line);
     }
 
-    .persona h3, .feature-card h3, .step-card h3 {
-      margin: 0 0 6px;
+    .mock-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .panel {
+      background: rgba(10,16,33,0.76);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .panel h3 {
+      margin: 0 0 8px;
       font-size: 1rem;
     }
 
-    .persona p, .feature-card p, .step-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    section {
-      margin-top: 28px;
-    }
-
-    .section-head {
+    .match-score {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
       margin-bottom: 14px;
     }
 
-    .section-head h2 {
-      margin: 0 0 8px;
-      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+    .score {
+      font-size: 2.3rem;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .score-note { color: var(--muted); font-size: 0.92rem; }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+
+    .chip.match { background: rgba(93,228,199,0.14); border-color: rgba(93,228,199,0.35); }
+    .chip.miss { background: rgba(255,123,138,0.12); border-color: rgba(255,123,138,0.28); }
+    .chip.next { background: rgba(124,156,255,0.13); border-color: rgba(124,156,255,0.3); }
+
+    section {
+      padding: 20px 0 10px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      margin: 0 0 14px;
       letter-spacing: -0.03em;
     }
 
-    .section-head p { margin: 0; color: var(--muted); max-width: 68ch; }
-
-    .feature-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .feature-card {
-      padding: 22px;
-      min-height: 170px;
-    }
-
-    .badge {
-      display: inline-block;
-      margin-bottom: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(36, 211, 181, 0.12);
-      color: #9df1e1;
-      border: 1px solid rgba(36, 211, 181, 0.24);
-      font-size: 0.82rem;
-      font-weight: 700;
-    }
-
-    .steps {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .step-card {
-      padding: 24px;
-    }
-
-    .step-num {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+    .features {
       display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, rgba(124,92,255,0.95), rgba(36,211,181,0.95));
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+    }
+
+    .feature .kicker {
+      color: var(--accent2);
       font-weight: 800;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+    }
+
+    .feature h4 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+    }
+
+    .feature p { margin: 0; color: var(--muted); }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .list-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .bullet {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .bullet:last-child { border-bottom: 0; }
+
+    .bullet strong { display: block; margin-bottom: 4px; }
+    .bullet span { color: var(--muted); font-size: 0.95rem; }
+
+    .mock-panel {
+      padding: 20px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
       margin-bottom: 14px;
     }
 
-    footer {
-      margin-top: 28px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.92rem;
-      padding: 18px 0 6px;
+    .report-header h3 { margin: 0; }
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(93,228,199,0.13);
+      color: #bff6ea;
+      border: 1px solid rgba(93,228,199,0.28);
+      font-weight: 700;
+      font-size: 0.85rem;
     }
 
-    @media (max-width: 900px) {
-      .hero, .feature-grid, .steps {
-        grid-template-columns: 1fr;
-      }
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
 
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    .metric {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(10,16,33,0.72);
+      border: 1px solid var(--line);
+    }
 
-      .hero-card { padding: 28px; }
-      .stats { grid-template-columns: 1fr; }
+    .metric .label { color: var(--muted); font-size: 0.84rem; }
+    .metric .value { font-size: 1.2rem; font-weight: 900; margin-top: 4px; }
+
+    .cta {
+      margin: 26px 0 54px;
+      padding: 28px;
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(124,156,255,0.16), rgba(93,228,199,0.12));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .cta h2 { margin: 0 0 8px; font-size: clamp(1.5rem, 2.4vw, 2.2rem); }
+    .cta p { margin: 0; color: var(--muted); }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      padding-bottom: 28px;
+    }
+
+    @media (max-width: 920px) {
+      .hero, .split, .features, .report-grid, .cta { grid-template-columns: 1fr; display: grid; }
+      .hero { padding-top: 18px; }
+    }
+
+    @media (max-width: 640px) {
+      .nav { flex-direction: column; align-items: flex-start; }
+      h1 { font-size: 2.6rem; }
+      .cta, .mock-panel, .hero-card, .feature, .list-card { border-radius: 20px; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
+  <header class="wrap">
+    <div class="nav">
       <div class="brand">
-        <div class="logo">S</div>
+        <div class="logo">SS</div>
         <div>SkillSync</div>
       </div>
-      <div class="tag">Browser extension for smarter job applications</div>
-    </header>
+      <div class="pill">Chrome extension demo · Resume-to-job skill matching</div>
+    </div>
+  </header>
 
-    <main>
-      <section class="hero">
-        <div class="hero-card">
-          <div class="kicker">Detect job posts. Compare your resume. Close the gap.</div>
-          <h1>Find the skills you’re missing before you hit apply.</h1>
-          <p class="subheadline">
-            SkillSync detects job postings on LinkedIn, Indeed, and Glassdoor, compares them to your resume,
-            and generates a personalized skills-gap report with prioritized, actionable recommendations to improve fit.
-          </p>
-          <div class="cta-row">
-            <a class="cta" href="#how-it-works">Get started</a>
-            <a class="secondary" href="#features">Explore features</a>
-          </div>
-          <div class="stats" aria-label="success metrics">
-            <div class="stat"><strong>70%</strong><span>resume upload completion target</span></div>
-            <div class="stat"><strong>&lt; 3s</strong><span>for most gap reports</span></div>
-            <div class="stat"><strong>40%</strong><span>users take an action from insights</span></div>
-          </div>
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="pill">See your job fit in seconds — right on the job posting page</div>
+        <h1>Turn any supported job post into a clear skills-gap plan.</h1>
+        <p class="subheadline">SkillSync is a Chrome browser extension that reads your resume, extracts your core skills, and compares them to the requirements in LinkedIn, Indeed, and Glassdoor job listings. Get matched skills, missing skills, and practical ways to close the gap before you apply.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#install">Install the Chrome Demo</a>
+          <a class="btn btn-secondary" href="#features">See how it works</a>
         </div>
+        <div class="meta-row">
+          <span>✓ Chrome only</span>
+          <span>✓ English-language resume and job content</span>
+          <span>✓ Limited supported job page patterns</span>
+        </div>
+      </div>
 
-        <aside class="info-card">
-          <div>
-            <p class="mini-title">Built for</p>
-            <div class="persona-list">
-              <div class="persona">
-                <h3>Early-Career Job Seekers</h3>
-                <p>Quickly understand which skills are missing and how to strengthen candidacy.</p>
+      <div class="hero-card" aria-label="SkillSync browser extension mock">
+        <div class="mock-top">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="mock-title">SkillSync Popup + On-Page Panel</div>
+          <div style="opacity:.75;font-size:.9rem;">Live demo</div>
+        </div>
+        <div class="mock-body">
+          <div class="browser-bar">🔎 linkedin.com/jobs/view/ · Job Detail Page Detected</div>
+          <div class="mock-grid">
+            <div class="panel">
+              <h3>Resume Status</h3>
+              <div class="match-score">
+                <div>
+                  <div class="score">78%</div>
+                  <div class="score-note">Skill match for this role</div>
+                </div>
+                <div class="badge">Good fit</div>
               </div>
-              <div class="persona">
-                <h3>Active Job Hunters</h3>
-                <p>Save time comparing postings against a resume across multiple applications per week.</p>
+              <div class="chips">
+                <span class="chip match">Python</span>
+                <span class="chip match">SQL</span>
+                <span class="chip match">Stakeholder communication</span>
+                <span class="chip miss">AWS</span>
+                <span class="chip miss">A/B testing</span>
               </div>
-              <div class="persona">
-                <h3>Career Coaches</h3>
-                <p>Deliver fast, consistent, concrete guidance without reviewing every posting manually.</p>
+            </div>
+            <div class="panel">
+              <h3>Suggested next steps</h3>
+              <div class="chips">
+                <span class="chip next">Add a project using AWS</span>
+                <span class="chip next">Tailor 2 resume bullets to analytics impact</span>
+                <span class="chip next">Take a short course on experimentation</span>
               </div>
             </div>
           </div>
-        </aside>
-      </section>
+        </div>
+      </div>
+    </section>
 
-      <section id="features">
-        <div class="section-head">
-          <h2>Features</h2>
-          <p>Everything you need to identify skill gaps, prioritize improvements, and turn job descriptions into a clear action plan.</p>
-        </div>
-        <div class="feature-grid">
-          <article class="feature-card">
-            <span class="badge">P0</span>
-            <h3>Job Posting Detection</h3>
-            <p>Automatically recognizes postings on LinkedIn, Indeed, and Glassdoor, then extracts title, company, location, and description.</p>
-          </article>
-          <article class="feature-card">
-            <span class="badge">P0</span>
-            <h3>Resume Upload and Import</h3>
-            <p>Upload a PDF or DOCX once and parse your resume into structured skills, experience, and education fields.</p>
-          </article>
-          <article class="feature-card">
-            <span class="badge">P0</span>
-            <h3>Skill Gap Matching Logic</h3>
-            <p>Compares job requirements to resume-derived skills and scores matched, partially matched, and missing qualifications.</p>
-          </article>
-          <article class="feature-card">
-            <span class="badge">P0</span>
-            <h3>Skill Extraction Engine</h3>
-            <p>Uses rules and NLP to normalize hard skills, tools, certifications, and soft skills into a common taxonomy.</p>
-          </article>
-          <article class="feature-card">
-            <span class="badge">P0</span>
-            <h3>Personalized Gap Report</h3>
-            <p>Shows what matters most for each role, including evidence of related experience and the highest-impact gaps to close.</p>
-          </article>
-          <article class="feature-card">
-            <span class="badge">P1</span>
-            <h3>Action Recommendations</h3>
-            <p>Suggests resume keywords, portfolio examples, certifications, and learning resources based on top priorities.</p>
-          </article>
-        </div>
-      </section>
+    <section id="features">
+      <h2 class="section-title">Built for fast application review</h2>
+      <div class="features">
+        <article class="feature">
+          <div class="kicker">Resume upload</div>
+          <h4>Parse a PDF or DOCX resume</h4>
+          <p>Extract core skills into a normalized list so users can compare their background to each target role.</p>
+        </article>
+        <article class="feature">
+          <div class="kicker">Job page detection</div>
+          <h4>Recognize supported listings</h4>
+          <p>Works on a demo-safe set of LinkedIn, Indeed, and Glassdoor job page patterns for credibility and reliability.</p>
+        </article>
+        <article class="feature">
+          <div class="kicker">Gap analysis</div>
+          <h4>Show matched and missing skills</h4>
+          <p>Surface a concise skills-gap panel with extracted requirements, overlaps, and clear missing areas.</p>
+        </article>
+        <article class="feature">
+          <div class="kicker">Actionable guidance</div>
+          <h4>Offer practical next steps</h4>
+          <p>For each gap, suggest lightweight actions like adding a project, tailoring bullets, or taking a course.</p>
+        </article>
+        <article class="feature">
+          <div class="kicker">Browser extension demo</div>
+          <h4>Chrome extension framing</h4>
+          <p>Designed as an extension-first experience with a popup and on-page panel that feels immediate and useful.</p>
+        </article>
+        <article class="feature">
+          <div class="kicker">Landing page</div>
+          <h4>Waitlist-ready marketing site</h4>
+          <p>Explains how the demo works, what’s supported, and gives visitors a simple call to action to get early access.</p>
+        </article>
+      </div>
+    </section>
 
-      <section id="how-it-works">
-        <div class="section-head">
-          <h2>How it works</h2>
-          <p>From viewing a job post to receiving a tailored improvement plan in just a few steps.</p>
-        </div>
-        <div class="steps">
-          <article class="step-card">
-            <div class="step-num">1</div>
-            <h3>Install and import your resume</h3>
-            <p>Start by uploading a resume PDF or DOCX, or connect a source to build your skill profile once.</p>
-          </article>
-          <article class="step-card">
-            <div class="step-num">2</div>
-            <h3>Open a job posting</h3>
-            <p>SkillSync detects listings on supported job boards and automatically extracts relevant posting details.</p>
-          </article>
-          <article class="step-card">
-            <div class="step-num">3</div>
-            <h3>Get your gap report</h3>
-            <p>See missing skills, evidence from your background, and prioritized recommendations to improve fit fast.</p>
-          </article>
-        </div>
-      </section>
-
-      <section>
-        <div class="hero-card" style="margin-top: 28px; padding: 30px;">
-          <div class="cta-row" style="justify-content: space-between; align-items: center;">
+    <section>
+      <div class="split">
+        <div class="list-card">
+          <h2 class="section-title" style="margin-top:0;">Who SkillSync helps</h2>
+          <div class="bullet">
+            <div>🎯</div>
             <div>
-              <p class="mini-title" style="margin-bottom: 8px;">Ready to improve your match rate?</p>
-              <h2 style="margin: 0; font-size: clamp(1.5rem, 3vw, 2.1rem);">Turn every job post into an actionable next step.</h2>
+              <strong>Active Job Seekers</strong>
+              <span>Quickly tailor applications and understand what’s missing for each role without manual comparison.</span>
             </div>
-            <a class="cta" href="#">Try SkillSync</a>
+          </div>
+          <div class="bullet">
+            <div>🔄</div>
+            <div>
+              <strong>Career Switchers</strong>
+              <span>See how existing experience maps to new functions or industries with more confidence.</span>
+            </div>
+          </div>
+          <div class="bullet">
+            <div>🎓</div>
+            <div>
+              <strong>Recent Graduates</strong>
+              <span>Learn which skills to emphasize now and which to build next to improve job fit.</span>
+            </div>
           </div>
         </div>
-      </section>
-    </main>
 
-    <footer>
-      SkillSync helps job seekers, career coaches, and active applicants close skills gaps with clarity and speed.
-    </footer>
-  </div>
+        <div class="mock-panel" aria-label="Sample skills gap report">
+          <div class="report-header">
+            <div>
+              <h3>Sample Skills-Gap Report</h3>
+              <div style="color:var(--muted);font-size:.94rem;">Applied to a Data Analyst role on a supported job page</div>
+            </div>
+            <div class="badge">Generated instantly</div>
+          </div>
+          <div class="report-grid">
+            <div class="metric">
+              <div class="label">Matched skills</div>
+              <div class="value">8 skills</div>
+            </div>
+            <div class="metric">
+              <div class="label">Missing skills</div>
+              <div class="value">3 skills</div>
+            </div>
+            <div class="metric">
+              <div class="label">Estimated fit</div>
+              <div class="value">Strong</div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:14px;border-radius:18px;background:rgba(10,16,33,0.72);border:1px solid var(--line);">
+            <div style="color:var(--muted);font-size:.9rem;margin-bottom:8px;">Extracted requirements</div>
+            <div class="chips">
+              <span class="chip match">SQL</span>
+              <span class="chip match">Python</span>
+              <span class="chip match">Data visualization</span>
+              <span class="chip match">Reporting</span>
+              <span class="chip miss">AWS</span>
+              <span class="chip miss">Experimentation</span>
+              <span class="chip miss">ETL</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:14px;border-radius:18px;background:rgba(10,16,33,0.72);border:1px solid var(--line);">
+            <div style="color:var(--muted);font-size:.9rem;margin-bottom:8px;">Recommended next actions</div>
+            <div class="chips">
+              <span class="chip next">Add a dashboard project</span>
+              <span class="chip next">Take a SQL refresher</span>
+              <span class="chip next">Rewrite resume bullets for impact</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" class="cta">
+      <div>
+        <h2>Get started with the SkillSync Chrome demo</h2>
+        <p>Upload your resume, open a supported job listing, and see your skills gap instantly.</p>
+      </div>
+      <a class="btn btn-primary" href="mailto:hello@skillsync.app?subject=SkillSync%20Early%20Access">Request Early Access</a>
+    </section>
+
+    <div class="footer-note">Limited demo scope: Chrome browser only, selected job pages only, and English-language resume/job content only.</div>
+  </main>
 </body>
 </html>
