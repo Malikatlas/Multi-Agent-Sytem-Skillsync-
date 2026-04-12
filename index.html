@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkillSync — See the skills you’re missing before you apply</title>
+  <meta name="description" content="SkillSync compares your resume to job posts and shows exactly which skills are missing, so you can apply smarter and faster." />
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(10, 20, 38, 0.82);
+      --panel-2: rgba(15, 28, 52, 0.92);
+      --text: #eaf1ff;
+      --muted: #a9b7d0;
+      --line: rgba(148, 163, 184, 0.18);
+      --accent: #7c5cff;
+      --accent-2: #2dd4bf;
+      --warn: #ffbf69;
+      --good: #67e8a6;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124, 92, 255, 0.28), transparent 32%),
+        radial-gradient(circle at top right, rgba(45, 212, 191, 0.20), transparent 28%),
+        linear-gradient(180deg, #06101d 0%, #081527 45%, #06101d 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    header {
+      padding: 24px 0 10px;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(180deg, rgba(6, 16, 29, 0.88), rgba(6, 16, 29, 0.42));
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      z-index: 5;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      font-size: 1.05rem;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), #4fd1ff);
+      box-shadow: 0 12px 24px rgba(124, 92, 255, 0.35);
+      position: relative;
+    }
+
+    .logo::after {
+      content: "";
+      position: absolute;
+      inset: 11px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    .hero {
+      padding: 56px 0 32px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .headline {
+      font-size: clamp(2.6rem, 5vw, 5.2rem);
+      line-height: 0.96;
+      margin: 16px 0 18px;
+      letter-spacing: -0.05em;
+      max-width: 12ch;
+    }
+
+    .subheadline {
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.6vw, 1.22rem);
+      line-height: 1.7;
+      max-width: 62ch;
+      margin: 0 0 28px;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px 20px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--accent), #4f83ff);
+      box-shadow: 0 18px 40px rgba(124, 92, 255, 0.28);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(148, 163, 184, 0.18);
+    }
+
+    .proof-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(12, 23, 44, 0.88), rgba(10, 20, 38, 0.78));
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .mock-shell {
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      margin-bottom: 14px;
+    }
+
+    .dots { display: flex; gap: 7px; }
+    .dots span { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,0.16); }
+    .address {
+      flex: 1;
+      margin: 0 12px;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ext-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #dbeafe;
+      font-size: 0.88rem;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(124, 92, 255, 0.16);
+      border: 1px solid rgba(124, 92, 255, 0.28);
+      white-space: nowrap;
+    }
+
+    .mock {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 14px;
+    }
+
+    .job-card, .report-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .job-title, .report-title { font-weight: 800; margin: 0 0 6px; }
+    .job-meta, .report-meta { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+
+    .skill-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      background: rgba(255,255,255,0.03);
+      color: #dbe7ff;
+    }
+    .tag.good { border-color: rgba(103, 232, 166, 0.25); background: rgba(103, 232, 166, 0.08); color: #b8f7d1; }
+    .tag.missing { border-color: rgba(255, 191, 105, 0.25); background: rgba(255, 191, 105, 0.08); color: #ffe0b3; }
+
+    .report-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .metric {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(7, 17, 31, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .metric strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+    .metric span { color: var(--muted); font-size: 0.9rem; }
+
+    .score {
+      min-width: 84px;
+      text-align: center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(45, 212, 191, 0.14), rgba(124, 92, 255, 0.12));
+      border: 1px solid rgba(45, 212, 191, 0.18);
+      font-weight: 800;
+      color: #dcfff7;
+    }
+
+    .section {
+      padding: 26px 0;
+    }
+
+    .section h2 {
+      font-size: clamp(1.65rem, 2.8vw, 2.4rem);
+      margin: 0 0 14px;
+      letter-spacing: -0.03em;
+    }
+
+    .section p.lead {
+      color: var(--muted);
+      max-width: 70ch;
+      line-height: 1.7;
+      margin: 0 0 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .card .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      background: rgba(124, 92, 255, 0.16);
+      border: 1px solid rgba(124, 92, 255, 0.22);
+      font-size: 1.1rem;
+    }
+
+    .card h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .card p { margin: 0; color: var(--muted); line-height: 1.65; }
+
+    .cta-banner {
+      margin: 28px 0 60px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(124, 92, 255, 0.18), rgba(45, 212, 191, 0.10));
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .cta-banner p { color: #d7e2f4; margin: 8px 0 0; line-height: 1.65; }
+    .cta-box {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(6, 16, 29, 0.48);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: grid;
+      gap: 10px;
+    }
+    .cta-box .btn { width: 100%; }
+
+    footer {
+      padding: 18px 0 36px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid, .mock, .cards, .cta-banner { grid-template-columns: 1fr; }
+      .headline { max-width: 100%; }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      header { padding-top: 18px; }
+      .nav { flex-direction: column; align-items: flex-start; }
+      .pill { width: 100%; justify-content: center; }
+      .hero { padding-top: 30px; }
+      .mock-shell { padding: 12px; }
+      .browser-bar { flex-wrap: wrap; }
+      .address { order: 3; width: 100%; margin: 6px 0 0; }
+      .cards { gap: 12px; }
+      .cta-banner { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><div class="logo" aria-hidden="true"></div>SkillSync</div>
+      <div class="pill">Browser-extension-assisted skills gap analysis for job seekers</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="pill">See exactly what’s missing before you apply</div>
+          <h1 class="headline">Find the skills gap. Fix it fast. Apply smarter.</h1>
+          <p class="subheadline">
+            SkillSync compares your resume with real job postings from LinkedIn, Indeed, and Glassdoor, then turns the overlap into a clear, actionable skills-gap report so you stop guessing and start focusing on the roles you can win.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#cta">Join the waitlist</a>
+            <a class="btn btn-secondary" href="#report">View sample report</a>
+          </div>
+          <div class="proof-row">
+            <span>✓ Resume upload prototype</span>
+            <span>✓ Job-post skill extraction mock</span>
+            <span>✓ Personalized next-step recommendations</span>
+          </div>
+        </div>
+
+        <div class="panel mock-shell" aria-label="SkillSync browser extension mockup">
+          <div class="browser-bar">
+            <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="address">https://www.linkedin.com/jobs/view/...</div>
+            <div class="ext-badge">🧩 SkillSync extension active</div>
+          </div>
+
+          <div class="mock">
+            <div class="job-card">
+              <p class="job-title">Senior Product Analyst</p>
+              <p class="job-meta">LinkedIn Job Post · San Francisco, CA · Hybrid</p>
+              <div class="skill-list">
+                <span class="tag good">SQL</span>
+                <span class="tag good">A/B Testing</span>
+                <span class="tag good">Dashboarding</span>
+                <span class="tag missing">Python</span>
+                <span class="tag missing">Statistics</span>
+                <span class="tag missing">Stakeholder Mgmt</span>
+              </div>
+              <p class="job-meta" style="margin-top:14px;">
+                SkillSync reads the posting in context and extracts the skills that matter most.
+              </p>
+            </div>
+
+            <div class="report-card" id="report">
+              <p class="report-title">Skills-Gap Report</p>
+              <div class="metric">
+                <div>
+                  <strong>Matched skills</strong>
+                  <span>What you already bring</span>
+                </div>
+                <div class="score">6 / 9</div>
+              </div>
+              <div class="metric">
+                <div>
+                  <strong>Missing skills</strong>
+                  <span>Prioritize these first</span>
+                </div>
+                <div class="score">3 gaps</div>
+              </div>
+              <div class="metric">
+                <div>
+                  <strong>Recommended next step</strong>
+                  <span>Close gaps with quick wins</span>
+                </div>
+                <div class="score">2 weeks</div>
+              </div>
+              <div class="job-meta">
+                <strong style="color: var(--warn);">Close first:</strong> Python, statistics, and stakeholder management. Add project examples or short course evidence before applying.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Built for actively applying job seekers</h2>
+      <p class="lead">
+        If you’re tailoring resumes across multiple sites and still not getting callbacks, SkillSync helps you focus on the roles that fit and the skills that will actually move the needle.
+      </p>
+
+      <div class="cards">
+        <article class="card">
+          <div class="icon">📄</div>
+          <h3>Resume upload</h3>
+          <p>Upload a PDF or DOCX resume and parse foundational skills to establish your baseline for comparison.</p>
+        </article>
+        <article class="card">
+          <div class="icon">🔎</div>
+          <h3>Job post skill extraction</h3>
+          <p>See extracted skills from a realistic job post mock so you can understand how the extension works in context.</p>
+        </article>
+        <article class="card">
+          <div class="icon">📈</div>
+          <h3>Actionable skills-gap report</h3>
+          <p>Get matched skills, missing skills, and plain-English recommendations for how to close each gap quickly.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Extension installation placeholder">
+      <div class="panel cta-banner" id="cta">
+        <div>
+          <div class="pill">Extension installation placeholder</div>
+          <h2 style="margin-top:14px;">Install in one click, then analyze jobs as you browse.</h2>
+          <p>
+            This prototype showcases the browser-extension experience without building the full extension yet. Join the waitlist to get early access, request a demo, and be first to try the real workflow.
+          </p>
+        </div>
+        <div class="cta-box">
+          <a class="btn btn-primary" href="#">Join the waitlist</a>
+          <a class="btn btn-secondary" href="#">Request a demo</a>
+          <div style="color: var(--muted); font-size: 0.9rem; line-height: 1.5; text-align: center;">No extension install required for this demo page.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    SkillSync — Skills-gap clarity for job seekers who want to apply with confidence.
+  </footer>
+</body>
+</html>
