@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SkillSync - Optimize Your Career with Skill Gap Insights</title>
+<style>
+  /* Reset & base */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f8fa;
+    color: #222;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  a {
+    color: #1a73e8;
+    text-decoration: none;
+  }
+  a:hover, a:focus {
+    text-decoration: underline;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+  header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+  }
+  header h1 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+  }
+  header p {
+    font-size: 1.25rem;
+    color: #555;
+    max-width: 650px;
+    margin: 0 auto 2rem;
+  }
+  .cta-button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 1.15rem;
+    padding: 0.85rem 2rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgb(26 115 232 / 0.4);
+  }
+  .cta-button:hover, .cta-button:focus {
+    background-color: #155ab6;
+    outline: none;
+  }
+  .section {
+    margin-top: 4rem;
+  }
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+  }
+  .features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+  @media(min-width: 600px) {
+    .features {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media(min-width: 900px) {
+    .features {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .feature {
+    background: white;
+    border-radius: 0.6rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.05);
+    border-left: 5px solid #1a73e8;
+  }
+  .feature h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    color: #175ab6;
+  }
+  .feature p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.4;
+  }
+  .product-mock {
+    background: white;
+    border-radius: 0.8rem;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.1);
+    padding: 1.5rem 2rem;
+    margin: 2rem auto 0;
+    max-width: 640px;
+  }
+  .mock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1rem;
+  }
+  .mock-header h4 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #1a1a1a;
+  }
+  .mock-header button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.4rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+  }
+  .mock-header button:hover {
+    background-color: #155ab6;
+  }
+  .skills-gap-report {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    background-color: #f9fafc;
+    border: 1px solid #ddd;
+    border-radius: 0.4rem;
+    padding: 1rem 1.5rem;
+    color: #222;
+    white-space: pre-wrap;
+    line-height: 1.35;
+  }
+  .footer {
+    margin-top: 5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    user-select: none;
+  }
+  .extension-frame {
+    margin: 2rem auto 3rem;
+    max-width: 650px;
+    background: white;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+    border-radius: 12px;
+    padding: 1rem 1.5rem 1.5rem;
+    border: 1px solid #d1d5db;
+  }
+  .extension-header {
+    font-weight: 700;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #1a73e8;
+    padding-bottom: 0.6rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+  }
+  .extension-description {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 1.5rem;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SkillSync</h1>
+      <p>Optimize your career prospects with SkillSync — the browser extension that identifies your skill gaps and recommends personalized upskilling paths automatically as you browse job postings.</p>
+      <button class="cta-button" onclick="window.location='#install-section'">Get Started - Install for Free</button>
+    </header>
+
+    <section class="extension-frame" aria-label="SkillSync browser extension overview">
+      <div class="extension-header">SkillSync Browser Extension</div>
+      <p class="extension-description">Seamlessly while you browse LinkedIn, Indeed, and Glassdoor, SkillSync detects job postings, compares required skills with your uploaded resume, and provides actionable skills-gap reports in real time.</p>
+      <img src="https://skill-sync-assets.s3.amazonaws.com/extension-mockup.png" alt="SkillSync browser extension mockup showing popup with job and skills gap" style="width:100%;border-radius: 0.5rem;box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);" />
+    </section>
+
+    <section class="section" aria-label="Features of SkillSync">
+      <h2>Key Features</h2>
+      <div class="features">
+        <article class="feature" aria-label="Job Posting Capture feature">
+          <h3>Job Posting Capture</h3>
+          <p>Monitors your browsing on LinkedIn, Indeed, and Glassdoor to detect and extract job posting details, including the required skills, automatically.</p>
+        </article>
+
+        <article class="feature" aria-label="Resume Upload and Parsing feature">
+          <h3>Resume Upload & Parsing</h3>
+          <p>Upload your resume to SkillSync to extract your existing skills for accurate comparison with job listings and identify gaps.</p>
+        </article>
+
+        <article class="feature" aria-label="Skills Extraction and Comparison feature">
+          <h3>Skills Extraction & Comparison</h3>
+          <p>Analyzes and compares skills required by the job against those on your resume, and highlights the missing or underrepresented skills you need to develop.</p>
+        </article>
+
+        <article class="feature" aria-label="Personalized Skills-Gap Report feature">
+          <h3>Personalized Skills-Gap Report</h3>
+          <p>Gets you a clear, customized report showing which skills you lack, ranked by urgency and relevance for each specific job role you view.</p>
+        </article>
+
+        <article class="feature" aria-label="Recommendations for Closing Skills Gaps feature">
+          <h3>Upskilling Recommendations</h3>
+          <p>Suggests courses, certifications, and resources specifically tailored for your missing skills, complete with links and estimated learning effort.</p>
+        </article>
+
+        <article class="feature" aria-label="Privacy and Data Security feature">
+          <h3>Privacy and Data Security</h3>
+          <p>Your resume and browsing activity are handled securely with transparent controls — your data stays private and protected at all times.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Sample Skills Gap Report">
+      <h2>Sample Skills-Gap Report</h2>
+      <div class="product-mock" role="region" aria-label="Example of SkillSync skills gap report for a job">
+        <div class="mock-header">
+          <h4>Skills Gap Report</h4>
+          <button aria-label="Download PDF of this report">Download PDF</button>
+        </div>
+        <pre class="skills-gap-report" tabindex="0">
+Job Title: Junior Data Analyst
+Company: DataTech Solutions
+
+Required Skills:
+- Python
+- SQL
+- Data Visualization
+- Excel
+- Statistics
+
+Your Resume Skills:
+- Python
+- Excel
+- Business Analysis
+
+==== Missing Skills ====
+• SQL (Urgent): Essential for querying databases – recommended beginner SQL course (~15 hours)
+• Data Visualization (Medium): Important for presenting data insights – take 'Tableau for Beginners' (~10 hours)
+• Statistics (High): Core skill for analyzing data trends – consider 'Statistics Fundamentals' (~12 hours)
+
+Suggested Learning Path:
+1. Complete SQL course on DataCamp (https://www.datacamp.com/courses/intro-to-sql)
+2. Take 'Tableau for Beginners' on Coursera
+3. Enroll in 'Statistics Fundamentals' on Udemy
+
+Estimated Total Learning Time: 37 hours
+        </pre>
+      </div>
+    </section>
+
+    <section class="section" id="install-section" aria-label="Call to action to install SkillSync">
+      <h2>Get Started with SkillSync Today</h2>
+      <p>Install the SkillSync browser extension now and start transforming your job search with personalized skills insights and upskilling guidance.</p>
+      <div style="text-align:center; margin-top:1.5rem;">
+        <button class="cta-button" onclick="alert('Redirecting to SkillSync extension install page...');">Install SkillSync for Free</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      &copy; 2024 SkillSync Inc. All rights reserved. &nbsp;|&nbsp; Your privacy and data security is our priority.
+    </footer>
+  </div>
+</body>
+</html>
