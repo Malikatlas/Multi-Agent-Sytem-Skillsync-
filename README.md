@@ -194,7 +194,7 @@ python main.py
 
 ---
 
-*Group:* Atlas Malik(24i-8020), Aieza Noor(24i-8021) and Muqaddas Rizwan(24i-8051) 
+*Author:* Atlas Malik
 *Date:* April 12, 2026  
 *Assignment:* LaunchMind - SkillSync MAS
 ```
